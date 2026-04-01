@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        input { margin: 10px 0; }
+        button { background: #4285F4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        #fileList { margin-top: 20px; text-align: left; }
+        .file-item { background: #eee; padding: 10px; margin: 5px 0; border-radius: 5px; display: flex; justify-content: space-between; }
+        a { color: #4285F4; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Syed Personal App</h2>
+    <p>Apna Photo ya Document chunein:</p>
+    <input type="file" id="myFile">
+    <br>
+    <button onclick="upload()">Upload Karein</button>
+    <p id="status"></p>
+    
+    <hr>
+    
+    <button style="background: #34A853;" onclick="loadFiles()">My Files Dekhein</button>
+    <div id="fileList"></div>
+</div>
+
+<script>
+function upload() {
+    var fileInput = document.getElementById('myFile');
+    if (fileInput.files.length == 0) {
+        alert("Pehle file chunein!");
+        return;
+    }
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    document.getElementById('status').innerHTML = "Uploading... Please wait.";
+    
+    reader.onload = function(e) {
+        var base64Data = e.target.result;
+        google.script.run.withSuccessHandler(function(res) {
+            document.getElementById('status').innerHTML = res;
+            loadFiles(); // Upload ke baad list refresh karein
+        }).uploadFileToDrive(base64Data, file.name);
+    };
+    reader.readAsDataURL(file);
+}
+
+function loadFiles() {
+    document.getElementById('fileList').innerHTML = "Loading files...";
+    google.script.run.withSuccessHandler(function(files) {
+        var div = document.getElementById('fileList');
+        div.innerHTML = "<h4>Aapki Files:</h4>";
+        if (files.length == 0) { div.innerHTML += "Koi file nahi mili."; }
+        
+        files.forEach(function(f) {
+            div.innerHTML += `
+                <div class="file-item">
+                    <span>${f.name}</span>
+                    <div>
+                        <a href="${f.view}" target="_blank">View</a> | 
+                        <a href="${f.url}">Download</a>
+                    </div>
+                </div>`;
+        });
+    }).getFilesList();
+}
+</script>
+
+</body>
+</html>
