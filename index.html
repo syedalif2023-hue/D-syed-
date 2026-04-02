@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SSC Chanakya App</title>
+    
+    <meta name="theme-color" content="#1a3c6c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="manifest" href="manifest.json">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        /* Mobile Fix CSS */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        html, body { overflow-x: hidden; width: 100%; height: 100%; margin: 0; padding: 0; background: #f4f7f9; touch-action: manipulation; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; }
+
+        /* Page 1: Data Entry */
+        #page-entry { width: 100%; max-width: 400px; padding: 15px; display: block; }
+        .form-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid #f37021; }
+        h2 { text-align: center; color: #1a3c6c; margin-bottom: 15px; font-size: 18px; text-transform: uppercase; }
+        label { font-size: 11px; font-weight: bold; color: #555; display: block; margin-top: 8px; }
+        input, select { width: 100%; padding: 12px; margin: 4px 0 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #fafafa; }
+        .btn-next { width: 100%; padding: 15px; background: #1a3c6c; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(26, 60, 108, 0.2); }
+
+        /* Page 2: Card Display */
+        #page-card { width: 100%; display: none; flex-direction: column; align-items: center; padding: 15px; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Vertical Professional Card */
+        #labor-card { 
+            width: 300px; height: 530px; background: white; border-radius: 15px; 
+            overflow: hidden; border: 2px solid #1a3c6c; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; position: relative;
+        }
+
+        .c-header { background: #1a3c6c; color: white; padding: 12px 10px; text-align: center; border-bottom: 4px solid #f37021; }
+        .c-header img { width: 45px; background: white; border-radius: 5px; padding: 3px; margin-bottom: 5px; }
+        .c-header b { font-size: 14px; display: block; line-height: 1.2; letter-spacing: 0.5px; }
+        .c-header span { font-size: 8px; text-transform: uppercase; opacity: 0.8; }
+
+        .c-body { flex-grow: 1; padding: 10px 12px; display: flex; flex-direction: column; align-items: center; background: #fff; }
+        .id-badge { background: #f37021; color: white; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-bottom: 8px; }
+        .photo-frame { width: 90px; height: 115px; border: 1.5px solid #1a3c6c; border-radius: 8px; overflow: hidden; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; background: #f9f9f9; }
+        #show-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .details { width: 100%; text-align: left; }
+        .label-c { font-size: 7.5px; color: #f37021; font-weight: bold; text-transform: uppercase; margin-top: 3px; display: block; }
+        .val-c { font-size: 12px; font-weight: bold; color: #1a3c6c; border-bottom: 1px solid #f2f2f2; display: block; min-height: 16px; }
+
+        /* Footer with Company Info */
+        .c-footer-info { background: #f8f9fa; padding: 10px; border-top: 1px solid #eee; }
+        .contact-row { display: flex; justify-content: space-between; align-items: flex-end; }
+        .addr-text { font-size: 7px; color: #555; line-height: 1.3; flex: 1; }
+        #qr-img { width: 55px; height: 55px; border: 1px solid #ddd; padding: 2px; background: #fff; }
+
+        .actions { margin-top: 15px; display: flex; gap: 10px; width: 300px; }
+        .btn-share { flex: 2; padding: 15px; background: #f37021; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(243, 112, 33, 0.3); }
+        .btn-back { flex: 1; padding: 15px; background: #666; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        #installPrompt { background: #1a3c6c; color: white; padding: 12px; width: 100%; max-width: 400px; border-radius: 10px; margin-bottom: 10px; display: none; text-align: center; font-weight: bold; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <button id="installPrompt">📲 INSTALL SSC APP</button>
+
+    <div id="page-entry">
+        <div class="form-card">
+            <h2>SSC Chanakya Entry</h2>
+            <label>📷 Worker Photo</label>
+            <input type="file" accept="image/*" id="fileInput">
+            
+            <label>👤 Full Name</label>
+            <input type="text" id="inName" placeholder="Enter Full Name">
+            
+            <label>📞 Mobile (10 Digit)</label>
+            <input type="number" id="inPhone" placeholder="Mobile Number" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);">
+            
+            <label>🪪 Aadhaar (12 Digit)</label>
+            <input type="number" id="inAadhar" placeholder="Aadhaar Number" oninput="if(this.value.length > 12) this.value = this.value.slice(0, 12);">
+            
+            <label>🏗️ Designation</label>
+            <select id="inWork">
+                <option value="">-- Select --</option>
+                <option value="Skilled Mason">Skilled Mason</option>
+                <option value="General Helper">General Helper</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Electrician">Electrician</option>
+            </select>
+            
+            <label>📍 Worker Location</label>
+            <input type="text" id="inAddr" placeholder="Work Location">
+            
+            <button class="btn-next" onclick="generateCard()">GENERATE CARD ➔</button>
+        </div>
+    </div>
+
+    <div id="page-card">
+        <div id="labor-card">
+            <div class="c-header">
+                <img src="https://www.chanakyaconstructions.com/images/logo.png" alt="Logo">
+                <b>CHANAKYA CONSTRUCTIONS</b>
+                <span>Official SSC Worker ID Card</span>
+            </div>
+
+            <div class="c-body">
+                <div class="id-badge" id="outID">ID: SSC-2026-0000</div>
+                <div class="photo-frame"><img id="show-img" src=""></div>
+                <div class="details">
+                    <span class="label-c">Site Engineer:</span> <span class="val-c" style="color: #d35400;">ROSHAN PAWAR</span>
+                    
+                    <span class="label-c">Worker Name:</span> <span class="val-c" id="outName">---</span>
+                    <span class="label-c">Aadhaar:</span> <span class="val-c" id="outAadhar">---</span>
+                    <span class="label-c">Work:</span> <span class="val-c" id="outWork">---</span>
+                    <span class="label-c">Contact:</span> <span class="val-c" id="outPhone">---</span>
+                </div>
+            </div>
+
+            <div class="c-footer-info">
+                <div class="contact-row">
+                    <div class="addr-text">
+                        <b>HEAD OFFICE:</b><br>
+                        Plot No. 12, Chanakya Tower,<br>
+                        Gomti Nagar, Lucknow - 226010<br>
+                        <b>📞 +91 8637831146</b><br>
+                        🌐 chanakyaconstructions.com
+                    </div>
+                    <img id="qr-img" src="" alt="QR">
+                </div>
+                <div style="text-align:center; font-size:7px; color:#28a745; font-weight:bold; border-top:1px solid #eee; padding-top:2px;">
+                    ✅ SYSTEM VERIFIED BY ROSHAN PAWAR
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-back" onclick="goBack()">BACK</button>
+            <button class="btn-share" onclick="shareCard()">SHARE CARD</button>
+        </div>
+    </div>
+
+<script>
+    // 1. Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('SW Registered');
+            }).catch(err => console.log('SW Error', err));
+        });
+    }
+
+    // 2. PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); deferredPrompt = e;
+        document.getElementById('installPrompt').style.display = 'block';
+    });
+    document.getElementById('installPrompt').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') document.getElementById('installPrompt').style.display = 'none';
+        }
+    });
+
+    // 3. App Functions
+    function generateCard() {
+        const name = document.getElementById('inName').value.toUpperCase();
+        const phone = document.getElementById('inPhone').value;
+        const aadhar = document.getElementById('inAadhar').value;
+        const work = document.getElementById('inWork').value;
+        const file = document.getElementById('fileInput').files[0];
+
+        if(!file || !name || phone.length < 10 || aadhar.length < 12) {
+            alert("Bhai, sari details sahi se bhariye (Photo, Name, 10 digit Mobile, 12 digit Aadhaar)");
+            return;
+        }
+
+        document.getElementById('outName').innerText = name;
+        document.getElementById('outAadhar').innerText = aadhar;
+        document.getElementById('outWork').innerText = work;
+        document.getElementById('outPhone').innerText = "+91 " + phone;
+        document.getElementById('outID').innerText = "ID: SSC-2026-" + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('show-img').src = URL.createObjectURL(file);
+
+        // QR Generate - Including Roshan Pawar's verification in QR
+        const qrData = `SSC-Verified|Engineer:RoshanPawar|Worker:${name}|Aadhar:${aadhar}`;
+        document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+
+        document.getElementById('page-entry').style.display = 'none';
+        document.getElementById('page-card').style.display = 'flex';
+    }
+
+    function goBack() {
+        document.getElementById('page-entry').style.display = 'block';
+        document.getElementById('page-card').style.display = 'none';
+    }
+
+    async function shareCard() {
+        const card = document.getElementById('labor-card');
+        const canvas = await html2canvas(card, { scale: 3, useCORS: true });
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], 'SSC_Worker_Card.png', { type: 'image/png' });
+            if (navigator.share) {
+                await navigator.share({ files: [file], title: 'SSC Card', text: 'Verified Card by Roshan Pawar' });
+            } else {
+                const link = document.createElement('a');
+                link.download = 'SSC_Worker_Card.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
