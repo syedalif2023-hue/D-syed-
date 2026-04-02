@@ -3,44 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syed Kirana Shop - Drive Portal</title>
+    <title>Syed Shop - Cloud Drive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hidden { display: none; }
-        body { background: #f3f4f6; font-family: sans-serif; }
+        .loader { border-top-color: #3498db; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen">
 
-    <div id="auth-section" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-xl">
-        <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center text-blue-600">Login to Syed Shop</h2>
+    <div id="auth-section" class="max-w-md mx-auto mt-20 p-8 bg-white rounded-xl shadow-2xl border-t-4 border-blue-600">
+        <h2 class="text-3xl font-bold mb-2 text-center text-gray-800">Syed Shop</h2>
+        <p class="text-center text-gray-500 mb-8 font-medium">Login to access your Drive</p>
         
-        <input type="email" id="email" placeholder="Email" class="w-full p-2 mb-4 border rounded">
-        <input type="password" id="password" placeholder="Password" class="w-full p-2 mb-4 border rounded">
+        <div class="space-y-4">
+            <input type="email" id="email" placeholder="Enter Email" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+            <input type="password" id="password" placeholder="Enter Password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+            
+            <button id="login-btn" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Login</button>
+            <div class="flex items-center my-4">
+                <hr class="flex-grow border-gray-300">
+                <span class="px-2 text-gray-400 text-sm">OR</span>
+                <hr class="flex-grow border-gray-300">
+            </div>
+            <button id="signup-btn" class="w-full bg-emerald-500 text-white font-semibold py-3 rounded-lg hover:bg-emerald-600 transition">Create New Account</button>
+        </div>
         
-        <button id="login-btn" class="w-full bg-blue-600 text-white p-2 rounded mb-2 hover:bg-blue-700">Login</button>
-        <button id="signup-btn" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Register</button>
-        
-        <p id="auth-error" class="text-red-500 mt-4 text-sm"></p>
+        <p id="auth-error" class="text-red-500 mt-4 text-center text-sm font-medium"></p>
     </div>
 
-    <div id="main-section" class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl hidden">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">Welcome to Syed Drive</h2>
-            <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+    <div id="main-section" class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Welcome, <span id="user-display-email" class="text-blue-600">User</span></h2>
+                <p class="text-sm text-gray-500">Manage your images and documents</p>
+            </div>
+            <button id="logout-btn" class="mt-4 md:mt-0 bg-red-500 text-white px-6 py-2 rounded-full font-medium hover:bg-red-600 transition">Logout</button>
         </div>
 
-        <div class="mb-8 p-4 border-2 border-dashed border-gray-300 rounded">
-            <h3 class="font-semibold mb-2">Upload File (Image, PDF, Doc)</h3>
-            <input type="file" id="file-input" class="mb-4">
-            <button id="upload-btn" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Upload to Drive</button>
-            <p id="upload-status" class="mt-2 text-sm font-medium text-blue-500"></p>
+        <div class="bg-blue-50 p-6 rounded-xl border-2 border-dashed border-blue-200 mb-8">
+            <h3 class="text-lg font-bold text-blue-800 mb-4">📤 Upload New File</h3>
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <input type="file" id="file-input" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                <button id="upload-btn" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-blue-800 transition">Upload to Drive</button>
+            </div>
+            <div id="upload-progress" class="mt-4 hidden items-center space-x-2">
+                <div class="loader ease-linear rounded-full border-2 border-t-2 border-gray-200 h-5 w-5"></div>
+                <span id="upload-status" class="text-sm font-semibold text-blue-700 italic">Processing...</span>
+            </div>
         </div>
 
         <div>
-            <h3 class="font-semibold mb-4">Your Documents</h3>
-            <div id="file-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <p class="text-gray-500">No files uploaded yet.</p>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">📂 Your Recent Documents</h3>
+            <div id="file-list" class="space-y-3">
+                <p id="no-files-msg" class="text-gray-400 italic text-center py-10 bg-gray-50 rounded-lg">No files uploaded in this session.</p>
             </div>
         </div>
     </div>
@@ -49,7 +66,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Aapka Firebase Configuration
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDpiRG3ZwxY9trXn4l4RPSdNDalaRzPmaU",
             authDomain: "syed-kirana-shop.firebaseapp.com",
@@ -62,27 +79,32 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Google Apps Script URL
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoEyOl29tGK0ORfVFBYBJx_0OCIaVMW808o-2ViOw6hlzH0k94qqmeqk1EmIz2fGxpnQ/exec";
+        // Naya Google Script URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYjR3x3TLZPAHZh54QLGKaqVpbKurdfudWooF7-O9cEi8HAsPGMwz9_PA25JexaBm7Tg/exec";
 
-        // --- Elements ---
         const authSection = document.getElementById('auth-section');
         const mainSection = document.getElementById('main-section');
+        const authError = document.getElementById('auth-error');
         const fileList = document.getElementById('file-list');
+        const progressDiv = document.getElementById('upload-progress');
 
-        // --- Authentication Logic ---
+        // --- AUTH LOGIC ---
         document.getElementById('signup-btn').onclick = () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
+            if(!email || !pass) return authError.innerText = "Please fill all fields!";
+            
             createUserWithEmailAndPassword(auth, email, pass)
-                .catch(err => document.getElementById('auth-error').innerText = err.message);
+                .then(() => authError.innerText = "")
+                .catch(err => authError.innerText = "Registration Failed: " + err.message);
         };
 
         document.getElementById('login-btn').onclick = () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             signInWithEmailAndPassword(auth, email, pass)
-                .catch(err => document.getElementById('auth-error').innerText = err.message);
+                .then(() => authError.innerText = "")
+                .catch(err => authError.innerText = "Login Error: " + err.message);
         };
 
         document.getElementById('logout-btn').onclick = () => signOut(auth);
@@ -91,45 +113,52 @@
             if (user) {
                 authSection.classList.add('hidden');
                 mainSection.classList.remove('hidden');
-                loadFiles(); // Load user files if needed
+                document.getElementById('user-display-email').innerText = user.email.split('@')[0];
             } else {
                 authSection.classList.remove('hidden');
                 mainSection.classList.add('hidden');
             }
         });
 
-        // --- File Upload Logic (to Google Drive) ---
+        // --- UPLOAD LOGIC ---
         document.getElementById('upload-btn').onclick = function() {
             const fileInput = document.getElementById('file-input');
-            const status = document.getElementById('upload-status');
+            const statusText = document.getElementById('upload-status');
             
-            if (fileInput.files.length === 0) return alert("Pehle file select karein!");
+            if (fileInput.files.length === 0) return alert("Pehle ek file select karein!");
             
             const file = fileInput.files[0];
             const reader = new FileReader();
             
-            status.innerText = "Uploading... Please wait.";
-            
+            progressDiv.classList.remove('hidden');
+            statusText.innerText = "Connecting to Drive...";
+
             reader.onload = function(e) {
                 const base64Data = e.target.result.split(',')[1];
                 const payload = {
                     base64: base64Data,
                     type: file.type,
-                    name: file.name,
-                    userEmail: auth.currentUser.email
+                    name: file.name
                 };
 
+                // Fixing FETCH call (Remove no-cors if using JSON response)
                 fetch(SCRIPT_URL, {
                     method: "POST",
                     body: JSON.stringify(payload)
                 })
                 .then(res => res.json())
                 .then(data => {
-                    status.innerText = "Success! File saved to Drive.";
-                    addFileToUI(data.url, file.name);
+                    if(data.status === "success") {
+                        statusText.innerText = "✅ Upload Successful!";
+                        document.getElementById('no-files-msg')?.classList.add('hidden');
+                        addFileToUI(data.url, file.name);
+                        fileInput.value = ""; // clear input
+                    } else {
+                        statusText.innerText = "❌ Script Error: " + data.message;
+                    }
                 })
                 .catch(err => {
-                    status.innerText = "Error uploading file.";
+                    statusText.innerText = "❌ Connection Failed. Check Script Deployment.";
                     console.error(err);
                 });
             };
@@ -138,17 +167,15 @@
 
         function addFileToUI(url, name) {
             const div = document.createElement('div');
-            div.className = "p-3 bg-gray-100 rounded flex justify-between items-center border";
+            div.className = "flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm hover:shadow-md transition";
             div.innerHTML = `
-                <span class="truncate mr-2 text-sm font-medium">${name}</span>
-                <a href="${url}" target="_blank" class="text-blue-500 underline text-sm">View/Download</a>
+                <div class="flex items-center space-x-3 truncate">
+                    <div class="bg-blue-100 p-2 rounded text-blue-600 font-bold text-xs uppercase">File</div>
+                    <span class="truncate font-medium text-gray-700">${name}</span>
+                </div>
+                <a href="${url}" target="_blank" class="shrink-0 bg-gray-800 text-white px-4 py-1.5 rounded-md text-sm hover:bg-black transition">View / Download</a>
             `;
             fileList.prepend(div);
-        }
-
-        function loadFiles() {
-            // Yahan aap purane files fetch karne ka logic daal sakte hain
-            // Agar aapke script mein 'GET' function files list karta hai.
         }
     </script>
 </body>
