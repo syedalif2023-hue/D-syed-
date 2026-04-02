@@ -1,74 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syed Kirana Shop - Drive Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        input { margin: 10px 0; }
-        button { background: #4285F4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        #fileList { margin-top: 20px; text-align: left; }
-        .file-item { background: #eee; padding: 10px; margin: 5px 0; border-radius: 5px; display: flex; justify-content: space-between; }
-        a { color: #4285F4; text-decoration: none; font-weight: bold; }
+        .hidden { display: none; }
+        body { background: #f3f4f6; font-family: sans-serif; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Syed Personal App</h2>
-    <p>Apna Photo ya Document chunein:</p>
-    <input type="file" id="myFile">
-    <br>
-    <button onclick="upload()">Upload Karein</button>
-    <p id="status"></p>
-    
-    <hr>
-    
-    <button style="background: #34A853;" onclick="loadFiles()">My Files Dekhein</button>
-    <div id="fileList"></div>
-</div>
-
-<script>
-function upload() {
-    var fileInput = document.getElementById('myFile');
-    if (fileInput.files.length == 0) {
-        alert("Pehle file chunein!");
-        return;
-    }
-    var file = fileInput.files[0];
-    var reader = new FileReader();
-    document.getElementById('status').innerHTML = "Uploading... Please wait.";
-    
-    reader.onload = function(e) {
-        var base64Data = e.target.result;
-        google.script.run.withSuccessHandler(function(res) {
-            document.getElementById('status').innerHTML = res;
-            loadFiles(); // Upload ke baad list refresh karein
-        }).uploadFileToDrive(base64Data, file.name);
-    };
-    reader.readAsDataURL(file);
-}
-
-function loadFiles() {
-    document.getElementById('fileList').innerHTML = "Loading files...";
-    google.script.run.withSuccessHandler(function(files) {
-        var div = document.getElementById('fileList');
-        div.innerHTML = "<h4>Aapki Files:</h4>";
-        if (files.length == 0) { div.innerHTML += "Koi file nahi mili."; }
+    <div id="auth-section" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-xl">
+        <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center text-blue-600">Login to Syed Shop</h2>
         
-        files.forEach(function(f) {
-            div.innerHTML += `
-                <div class="file-item">
-                    <span>${f.name}</span>
-                    <div>
-                        <a href="${f.view}" target="_blank">View</a> | 
-                        <a href="${f.url}">Download</a>
-                    </div>
-                </div>`;
-        });
-    }).getFilesList();
-}
-</script>
+        <input type="email" id="email" placeholder="Email" class="w-full p-2 mb-4 border rounded">
+        <input type="password" id="password" placeholder="Password" class="w-full p-2 mb-4 border rounded">
+        
+        <button id="login-btn" class="w-full bg-blue-600 text-white p-2 rounded mb-2 hover:bg-blue-700">Login</button>
+        <button id="signup-btn" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Register</button>
+        
+        <p id="auth-error" class="text-red-500 mt-4 text-sm"></p>
+    </div>
 
+    <div id="main-section" class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Welcome to Syed Drive</h2>
+            <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+        </div>
+
+        <div class="mb-8 p-4 border-2 border-dashed border-gray-300 rounded">
+            <h3 class="font-semibold mb-2">Upload File (Image, PDF, Doc)</h3>
+            <input type="file" id="file-input" class="mb-4">
+            <button id="upload-btn" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Upload to Drive</button>
+            <p id="upload-status" class="mt-2 text-sm font-medium text-blue-500"></p>
+        </div>
+
+        <div>
+            <h3 class="font-semibold mb-4">Your Documents</h3>
+            <div id="file-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-gray-500">No files uploaded yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Aapka Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDpiRG3ZwxY9trXn4l4RPSdNDalaRzPmaU",
+            authDomain: "syed-kirana-shop.firebaseapp.com",
+            projectId: "syed-kirana-shop",
+            storageBucket: "syed-kirana-shop.firebasestorage.app",
+            messagingSenderId: "152414262069",
+            appId: "1:152414262069:web:a27ddda6004db29fdbf27c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Google Apps Script URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoEyOl29tGK0ORfVFBYBJx_0OCIaVMW808o-2ViOw6hlzH0k94qqmeqk1EmIz2fGxpnQ/exec";
+
+        // --- Elements ---
+        const authSection = document.getElementById('auth-section');
+        const mainSection = document.getElementById('main-section');
+        const fileList = document.getElementById('file-list');
+
+        // --- Authentication Logic ---
+        document.getElementById('signup-btn').onclick = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            createUserWithEmailAndPassword(auth, email, pass)
+                .catch(err => document.getElementById('auth-error').innerText = err.message);
+        };
+
+        document.getElementById('login-btn').onclick = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .catch(err => document.getElementById('auth-error').innerText = err.message);
+        };
+
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authSection.classList.add('hidden');
+                mainSection.classList.remove('hidden');
+                loadFiles(); // Load user files if needed
+            } else {
+                authSection.classList.remove('hidden');
+                mainSection.classList.add('hidden');
+            }
+        });
+
+        // --- File Upload Logic (to Google Drive) ---
+        document.getElementById('upload-btn').onclick = function() {
+            const fileInput = document.getElementById('file-input');
+            const status = document.getElementById('upload-status');
+            
+            if (fileInput.files.length === 0) return alert("Pehle file select karein!");
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            status.innerText = "Uploading... Please wait.";
+            
+            reader.onload = function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                const payload = {
+                    base64: base64Data,
+                    type: file.type,
+                    name: file.name,
+                    userEmail: auth.currentUser.email
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    status.innerText = "Success! File saved to Drive.";
+                    addFileToUI(data.url, file.name);
+                })
+                .catch(err => {
+                    status.innerText = "Error uploading file.";
+                    console.error(err);
+                });
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function addFileToUI(url, name) {
+            const div = document.createElement('div');
+            div.className = "p-3 bg-gray-100 rounded flex justify-between items-center border";
+            div.innerHTML = `
+                <span class="truncate mr-2 text-sm font-medium">${name}</span>
+                <a href="${url}" target="_blank" class="text-blue-500 underline text-sm">View/Download</a>
+            `;
+            fileList.prepend(div);
+        }
+
+        function loadFiles() {
+            // Yahan aap purane files fetch karne ka logic daal sakte hain
+            // Agar aapke script mein 'GET' function files list karta hai.
+        }
+    </script>
 </body>
 </html>
