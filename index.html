@@ -3,180 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syed Shop - Cloud Drive</title>
+    <title>Professional Registration Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        .hidden { display: none; }
-        .loader { border-top-color: #3498db; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gradient-to-br from-blue-500 to-indigo-900 min-h-screen flex items-center justify-center p-6">
 
-    <div id="auth-section" class="max-w-md mx-auto mt-20 p-8 bg-white rounded-xl shadow-2xl border-t-4 border-blue-600">
-        <h2 class="text-3xl font-bold mb-2 text-center text-gray-800">Syed Shop</h2>
-        <p class="text-center text-gray-500 mb-8 font-medium">Login to access your Drive</p>
-        
-        <div class="space-y-4">
-            <input type="email" id="email" placeholder="Enter Email" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
-            <input type="password" id="password" placeholder="Enter Password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
-            
-            <button id="login-btn" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Login</button>
-            <div class="flex items-center my-4">
-                <hr class="flex-grow border-gray-300">
-                <span class="px-2 text-gray-400 text-sm">OR</span>
-                <hr class="flex-grow border-gray-300">
-            </div>
-            <button id="signup-btn" class="w-full bg-emerald-500 text-white font-semibold py-3 rounded-lg hover:bg-emerald-600 transition">Create New Account</button>
+    <div class="glass-effect w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+        <div class="bg-indigo-600 p-6 text-center">
+            <h2 class="text-2xl font-bold text-white uppercase tracking-wider">Business Registration</h2>
+            <p class="text-indigo-100 text-sm mt-1">Please fill in your details below</p>
         </div>
-        
-        <p id="auth-error" class="text-red-500 mt-4 text-center text-sm font-medium"></p>
-    </div>
 
-    <div id="main-section" class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg hidden">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b">
+        <form action="https://script.google.com/macros/s/AKfycbyoXDOiq1b36eqLm0qHPs7F1HYvHsfBq7fI9duVYybzn5T9BVPVITukd3oke9I_W6jZ/exec" method="POST" class="p-8 space-y-5">
+            
             <div>
-                <h2 class="text-2xl font-bold text-gray-800">Welcome, <span id="user-display-email" class="text-blue-600">User</span></h2>
-                <p class="text-sm text-gray-500">Manage your images and documents</p>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                <input type="text" name="name" required
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    placeholder="Enter your name">
             </div>
-            <button id="logout-btn" class="mt-4 md:mt-0 bg-red-500 text-white px-6 py-2 rounded-full font-medium hover:bg-red-600 transition">Logout</button>
-        </div>
 
-        <div class="bg-blue-50 p-6 rounded-xl border-2 border-dashed border-blue-200 mb-8">
-            <h3 class="text-lg font-bold text-blue-800 mb-4">📤 Upload New File</h3>
-            <div class="flex flex-col sm:flex-row items-center gap-4">
-                <input type="file" id="file-input" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
-                <button id="upload-btn" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-blue-800 transition">Upload to Drive</button>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                <input type="email" name="email" required
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    placeholder="syed@example.com">
             </div>
-            <div id="upload-progress" class="mt-4 hidden items-center space-x-2">
-                <div class="loader ease-linear rounded-full border-2 border-t-2 border-gray-200 h-5 w-5"></div>
-                <span id="upload-status" class="text-sm font-semibold text-blue-700 italic">Processing...</span>
-            </div>
-        </div>
 
-        <div>
-            <h3 class="text-xl font-bold text-gray-800 mb-4">📂 Your Recent Documents</h3>
-            <div id="file-list" class="space-y-3">
-                <p id="no-files-msg" class="text-gray-400 italic text-center py-10 bg-gray-50 rounded-lg">No files uploaded in this session.</p>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                <input type="tel" name="phone" required
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    placeholder="+91 00000 00000">
             </div>
-        </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Service Details</label>
+                <textarea name="details" rows="3"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    placeholder="Briefly describe your requirements..."></textarea>
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform transition hover:-translate-y-1 active:scale-95">
+                Submit Data to Sheet
+            </button>
+
+            <p class="text-center text-xs text-gray-400 mt-4">
+                © 2026 Syed Natural Services. Secure & Encrypted.
+            </p>
+        </form>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyDpiRG3ZwxY9trXn4l4RPSdNDalaRzPmaU",
-            authDomain: "syed-kirana-shop.firebaseapp.com",
-            projectId: "syed-kirana-shop",
-            storageBucket: "syed-kirana-shop.firebasestorage.app",
-            messagingSenderId: "152414262069",
-            appId: "1:152414262069:web:a27ddda6004db29fdbf27c"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Naya Google Script URL
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYjR3x3TLZPAHZh54QLGKaqVpbKurdfudWooF7-O9cEi8HAsPGMwz9_PA25JexaBm7Tg/exec";
-
-        const authSection = document.getElementById('auth-section');
-        const mainSection = document.getElementById('main-section');
-        const authError = document.getElementById('auth-error');
-        const fileList = document.getElementById('file-list');
-        const progressDiv = document.getElementById('upload-progress');
-
-        // --- AUTH LOGIC ---
-        document.getElementById('signup-btn').onclick = () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            if(!email || !pass) return authError.innerText = "Please fill all fields!";
-            
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then(() => authError.innerText = "")
-                .catch(err => authError.innerText = "Registration Failed: " + err.message);
-        };
-
-        document.getElementById('login-btn').onclick = () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, pass)
-                .then(() => authError.innerText = "")
-                .catch(err => authError.innerText = "Login Error: " + err.message);
-        };
-
-        document.getElementById('logout-btn').onclick = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authSection.classList.add('hidden');
-                mainSection.classList.remove('hidden');
-                document.getElementById('user-display-email').innerText = user.email.split('@')[0];
-            } else {
-                authSection.classList.remove('hidden');
-                mainSection.classList.add('hidden');
-            }
-        });
-
-        // --- UPLOAD LOGIC ---
-        document.getElementById('upload-btn').onclick = function() {
-            const fileInput = document.getElementById('file-input');
-            const statusText = document.getElementById('upload-status');
-            
-            if (fileInput.files.length === 0) return alert("Pehle ek file select karein!");
-            
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            
-            progressDiv.classList.remove('hidden');
-            statusText.innerText = "Connecting to Drive...";
-
-            reader.onload = function(e) {
-                const base64Data = e.target.result.split(',')[1];
-                const payload = {
-                    base64: base64Data,
-                    type: file.type,
-                    name: file.name
-                };
-
-                // Fixing FETCH call (Remove no-cors if using JSON response)
-                fetch(SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.status === "success") {
-                        statusText.innerText = "✅ Upload Successful!";
-                        document.getElementById('no-files-msg')?.classList.add('hidden');
-                        addFileToUI(data.url, file.name);
-                        fileInput.value = ""; // clear input
-                    } else {
-                        statusText.innerText = "❌ Script Error: " + data.message;
-                    }
-                })
-                .catch(err => {
-                    statusText.innerText = "❌ Connection Failed. Check Script Deployment.";
-                    console.error(err);
-                });
-            };
-            reader.readAsDataURL(file);
-        };
-
-        function addFileToUI(url, name) {
-            const div = document.createElement('div');
-            div.className = "flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm hover:shadow-md transition";
-            div.innerHTML = `
-                <div class="flex items-center space-x-3 truncate">
-                    <div class="bg-blue-100 p-2 rounded text-blue-600 font-bold text-xs uppercase">File</div>
-                    <span class="truncate font-medium text-gray-700">${name}</span>
-                </div>
-                <a href="${url}" target="_blank" class="shrink-0 bg-gray-800 text-white px-4 py-1.5 rounded-md text-sm hover:bg-black transition">View / Download</a>
-            `;
-            fileList.prepend(div);
-        }
-    </script>
 </body>
 </html>
