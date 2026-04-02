@@ -1,20 +1,20 @@
 {
-  "name": "SSC Chanakya Labour App",
-  "short_name": "SSC-App",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1a3c6c",
+  "short_name": "SSC Chanakya",
+  "name": "SSC Chanakya Construction App",
   "icons": [
     {
-      "src": "https://www.chanakyaconstructions.com/images/logo.png",
+      "src": "https://i.postimg.cc/vB64vLRh/1000186001-removebg-preview-(1).png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://www.chanakyaconstructions.com/images/logo.png",
+      "src": "https://i.postimg.cc/vB64vLRh/1000186001-removebg-preview-(1).png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1a3c6c",
+  "background_color": "#f4f7f9"
 }

@@ -1,26 +1,17 @@
-const CACHE_NAME = 'ssc-app-v1';
-const urlsToCache = [
-  '/',
-  'index.html',
-  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
-];
+const cacheName = 'ssc-v1';
+const staticAssets = ['./', './index.html']; // index.html ki jagah aapki file ka naam
 
-// Install Service Worker
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+self.addEventListener('install', async e => {
+  const cache = await caches.open(cacheName);
+  await cache.addAll(staticAssets);
+  return self.skipWaiting();
 });
 
-// Fetch Cache
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request);
-      })
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    (async () => {
+      const res = await caches.match(e.request);
+      return res || fetch(e.request);
+    })()
   );
 });
